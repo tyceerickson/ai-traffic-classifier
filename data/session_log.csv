@@ -1,0 +1,2 @@
+timestamp_start,timestamp_end,scenario,targets,label,notes
+2025-05-13 00:00:00,2025-05-13 00:00:01,EXAMPLE_DO_NOT_USE,192.168.30.20,malicious,Delete this row and add your real sessions below

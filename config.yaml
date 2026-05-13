@@ -1,0 +1,67 @@
+# ============================================================
+# ai-traffic-classifier — Central Pipeline Configuration
+# ============================================================
+# All scripts read from this file. Change values here, not
+# inside individual scripts.
+
+# ── Network / Lab ────────────────────────────────────────────
+lab:
+  opnsense_ip: "192.168.10.1"
+  opnsense_user: "root"                   # SSH user for OPNsense
+  ubuntu_pcap_dir: "/opt/pcaps"           # Where OPNsense drops PCAPs via rsync
+  capture_interface: "em1"               # OPNsense interface facing VLAN 20→30
+
+  # VLAN 30 victim hosts — used in attack scripts for reference
+  victims:
+    windows11:   "192.168.30.10"
+    metasploitable: "192.168.30.20"
+    tp_link_ap:  "192.168.30.2"
+
+# ── Data Paths ───────────────────────────────────────────────
+paths:
+  raw_pcap_dir:        "data/raw"
+  processed_dir:       "data/processed"
+  session_log:         "data/session_log.csv"
+  cicflow_output_dir:  "pipeline/cicflow_output"
+  cicflowmeter_jar:    "/opt/CICFlowMeter/bin/CICFlowMeter"
+  master_dataset:      "data/processed/features.csv"
+  train_csv:           "data/processed/train.csv"
+  test_csv:            "data/processed/test.csv"
+
+# ── Pipeline Settings ────────────────────────────────────────
+pipeline:
+  rsync_schedule_minutes: 60       # How often to pull PCAPs from OPNsense
+  min_pcap_size_kb: 100            # Ignore PCAPs smaller than this (incomplete captures)
+  label_benign: 0
+  label_malicious: 1
+
+# ── Preprocessing ────────────────────────────────────────────
+preprocessing:
+  test_split: 0.2
+  random_state: 42
+  scale_features: true
+  handle_imbalance: true           # Apply SMOTE if class ratio exceeds threshold
+  imbalance_threshold: 3.0         # Max benign:malicious ratio before SMOTE kicks in
+
+# ── Model Training ───────────────────────────────────────────
+training:
+  models:
+    - "random_forest"
+    - "xgboost"
+    - "decision_tree"
+    - "logistic_regression"
+  primary_model: "random_forest"
+  random_forest:
+    n_estimators: 100
+    max_depth: null
+    random_state: 42
+  xgboost:
+    n_estimators: 100
+    learning_rate: 0.1
+    random_state: 42
+
+# ── Ollama / Explainability ──────────────────────────────────
+ollama:
+  model: "llama3"
+  host: "http://localhost:11434"
+  top_n_flows_to_explain: 10       # Number of flagged flows to send to LLM
