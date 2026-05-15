@@ -23,7 +23,7 @@
 #   Different flow patterns than pure SYN scan
 #
 # Usage:
-#   sudo bash nmap_service_scan.sh
+#   sudo bash nmap-service-scan.sh
 #
 # After running, log this session in data/session_log.csv:
 #   timestamp_start, timestamp_end, nmap_service_scan,
