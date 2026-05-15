@@ -41,7 +41,7 @@ TARGETS=(
 # Port range to scan
 # -p 1-1000 covers the most common service ports
 # Change to -p- to scan all 65535 ports (slower)
-PORT_RANGE="1-1000"
+PORT_RANGE="1-65535"
 
 # Output directory for scan results
 OUTPUT_DIR="/tmp/scan_results"
