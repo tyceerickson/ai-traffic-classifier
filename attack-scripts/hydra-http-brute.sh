@@ -34,7 +34,7 @@
 #   Possible ET WEB_APP DVWA specific rules
 #
 # Usage:
-#   bash hydra_http_brute.sh
+#   bash hydra-http-brute.sh
 #
 # After running, log this session in data/session_log.csv:
 #   timestamp_start, timestamp_end, hydra_http_brute,
