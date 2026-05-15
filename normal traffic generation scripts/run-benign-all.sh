@@ -5,8 +5,8 @@
 # background. Scripts loop continuously until stopped.
 #
 # Run on: Ubuntu Server VM (192.168.10.4)
-# Usage:  bash run_benign_all.sh
-# Stop:   bash stop_benign_all.sh
+# Usage:  bash run-benign-all.sh
+# Stop:   bash stop-benign-all.sh
 # ============================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,18 +33,18 @@ start_script() {
     echo "[+] Started ${name} (PID: ${pid})"
 }
 
-start_script "benign_web_traffic.sh"   "web_traffic"
-start_script "benign_dns_queries.sh"   "dns_queries"
-start_script "benign_ssh_session.sh"   "ssh_session"
-start_script "benign_file_transfer.sh" "file_transfer"
-start_script "benign_ping_sweep.sh"    "ping_sweep"
+start_script "benign-web-traffic.sh"   "web-traffic"
+start_script "benign-dns-queries.sh"   "dns-queries"
+start_script "benign-ssh-session.sh"   "ssh-session"
+start_script "benign-file-transfer.sh" "file-transfer"
+start_script "benign-ping-sweep.sh"    "ping-sweep"
 
 echo ""
 echo "============================================"
 echo " All 5 benign scripts running"
 echo " PIDs saved to: ${PID_FILE}"
 echo " Logs at: /tmp/*.log"
-echo " Stop with: bash stop_benign_all.sh"
+echo " Stop with: bash stop-benign-all.sh"
 echo "============================================"
 echo ""
 echo "[!] Record start time in session_log.csv"
