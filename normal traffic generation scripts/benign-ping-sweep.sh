@@ -10,7 +10,7 @@
 # generates routinely. Very different from Nmap ping sweeps:
 # slower, targeted, regular intervals, no port scanning follows.
 #
-# Usage: bash benign_ping_sweep.sh
+# Usage: bash benign-ping-sweep.sh
 # Log in session_log.csv: label=benign, scenario=benign_ping_sweep
 # ============================================================
 
