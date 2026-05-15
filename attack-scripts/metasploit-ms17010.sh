@@ -29,7 +29,7 @@
 #   fine for our dataset — we want the traffic, not the shell.
 #
 # Usage:
-#   bash metasploit_ms17010.sh
+#   bash metasploit-ms17010.sh
 #   (does NOT require root — msfconsole handles its own privs)
 #
 # After running, log this session in data/session_log.csv:
