@@ -17,11 +17,11 @@ echo ""
 
 if [ ! -f "$PID_FILE" ]; then
     echo "[!] No PID file found — killing by process name instead..."
-    pkill -f "benign_web_traffic.sh"
-    pkill -f "benign_dns_queries.sh"
-    pkill -f "benign_ssh_session.sh"
-    pkill -f "benign_file_transfer.sh"
-    pkill -f "benign_ping_sweep.sh"
+    pkill -f "benign-web-traffic.sh"
+    pkill -f "benign-dns-queries.sh"
+    pkill -f "benign-ssh-session.sh"
+    pkill -f "benign-file-transfer.sh"
+    pkill -f "benign-ping-sweep.sh"
 else
     while read pid; do
         if kill -0 "$pid" 2>/dev/null; then
