@@ -31,7 +31,7 @@
 #   6. Badsum probing        — fingerprint firewall/IDS behavior
 #
 # Usage:
-#   sudo bash nmap_evasion_scan.sh
+#   sudo bash nmap-evasion-scan.sh
 #
 # After running, log in data/session_log.csv:
 #   timestamp_start, timestamp_end, nmap_evasion_scan,
