@@ -1,11 +1,2 @@
-this is the command to run all the scripts at the same time on a loop until manuall stopped. This allows time for all the attack scripts to run through their whole process with "normal generated traffic"
+run this script to automatically start and loop all the traffic generation scripts and stops them automatically
 
-while true; do bash benign_web_traffic.sh; done & \
-while true; do bash benign_dns_queries.sh; done & \
-while true; do bash benign_ssh_session.sh; done & \
-while true; do bash benign_file_transfer.sh; done & \
-while true; do bash benign_ping_sweep.sh; done &
-
-this command kills all the scripts once finished 
-
-kill $(jobs -p)
