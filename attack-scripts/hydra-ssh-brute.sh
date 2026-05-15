@@ -29,7 +29,7 @@
 #   Very distinctive pattern in flow data
 #
 # Usage:
-#   bash hydra_ssh_brute.sh
+#   bash hydra-ssh-brute.sh
 #
 # After running, log this session in data/session_log.csv:
 #   timestamp_start, timestamp_end, hydra_ssh_brute,
