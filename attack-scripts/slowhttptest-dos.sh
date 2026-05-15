@@ -34,7 +34,7 @@
 #   to learn attacks aren't always high-volume floods.
 #
 # Usage:
-#   bash slowhttptest_dos.sh
+#   bash slowhttptest-dos.sh
 #
 # After running, log this session in data/session_log.csv:
 #   timestamp_start, timestamp_end, slowhttptest_dos,
