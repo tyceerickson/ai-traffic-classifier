@@ -38,7 +38,7 @@
 #                        sending stolen data back to C2)
 #
 # Usage:
-#   python3 c2_beacon.py [--mode regular|jitter|exfil]
+#   python3 c2-beacon.py [--mode regular|jitter|exfil]
 #                        [--duration 300]
 #                        [--interval 30]
 #
