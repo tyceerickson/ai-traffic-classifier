@@ -10,7 +10,7 @@
 # session traffic that looks nothing like brute force.
 #
 # Requires: sshpass (installed if missing)
-# Usage: bash benign_ssh_session.sh
+# Usage: bash benign-ssh-session.sh
 # Log in session_log.csv: label=benign, scenario=benign_ssh_session
 # ============================================================
 
