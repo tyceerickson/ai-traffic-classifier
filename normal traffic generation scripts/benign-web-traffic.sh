@@ -8,7 +8,7 @@
 # Simulates a user browsing websites — HTTP GETs, page loads,
 # varied user agents, normal request timing.
 #
-# Usage: bash benign_web_traffic.sh
+# Usage: bash benign-web-traffic.sh
 # Log in session_log.csv: label=benign, scenario=benign_web_traffic
 # ============================================================
 
