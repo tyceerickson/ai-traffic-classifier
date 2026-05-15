@@ -11,7 +11,7 @@
 # from attack traffic: large sustained flows, high throughput,
 # long duration, completes cleanly.
 #
-# Usage: bash benign_file_transfer.sh
+# Usage: bash benign-file-transfer.sh
 # Log in session_log.csv: label=benign, scenario=benign_file_transfer
 # ============================================================
 
