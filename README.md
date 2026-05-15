@@ -145,8 +145,8 @@ Raw PCAP files are not committed to this repo. To regenerate the dataset:
 | # | Milestone | Status |
 |---|-----------|--------|
 | 0 | Repo scaffold + Ubuntu environment setup | ✅ Complete |
-| 1 | OPNsense continuous capture + Suricata | 🔧 In Progress |
-| 2 | Attack scripts on Kali | ⬜ Pending |
+| 1 | OPNsense continuous capture + Suricata | ✅ Complete |
+| 2 | Attack scripts on Kali | 🔧 In Progress |
 | 3 | Ubuntu pipeline — sync, CICFlowMeter, labeling | ⬜ Pending |
 | 4 | First capture session | ⬜ Pending |
 | 5 | Preprocessing pipeline | ⬜ Pending |
