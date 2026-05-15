@@ -8,7 +8,7 @@
 # Simulates normal DNS lookups — the kind any device generates
 # constantly in the background just by being on a network.
 #
-# Usage: bash benign_dns_queries.sh
+# Usage: bash benign_dns-queries.sh
 # Log in session_log.csv: label=benign, scenario=benign_dns_queries
 # ============================================================
 
