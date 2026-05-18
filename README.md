@@ -2,7 +2,7 @@
 
 > Local ML model trained on real malicious and benign network traffic generated in a home cybersecurity lab.
 
-**Status:** 🔧 In Progress — Milestone 0 complete (repo scaffold + environment setup)
+**Status:** 🔧 In Progress — Milestones 0, 1, 2 complete — Milestone 3 in progress
 
 ---
 
@@ -18,7 +18,7 @@ The pipeline covers everything from raw packet capture to a trained classifier w
 
 | Component | Details |
 |-----------|---------|
-| Firewall | OPNsense — continuous packet capture + Suricata IDS |
+| Firewall | OPNsense — continuous packet capture + Suricata IDS (28,699 ET rules) |
 | Core Switch | Netgear Managed — trunks VLANs 10/20/30/40 |
 | Hypervisor | Apple Mac Server running UTM |
 | Attacker | Kali Linux (192.168.20.20) — VLAN 20 |
@@ -42,9 +42,9 @@ OPNsense Firewall
         │  rsync hourly
         ▼
 Ubuntu Server VM  ← pipeline engine
-  ├── sync_pcaps.sh       — pulls PCAPs from OPNsense
-  ├── run_cicflowmeter.sh — extracts flow features
-  └── label_flows.py      — applies labels from session_log.csv
+  ├── sync-pcaps.sh       — pulls PCAPs from OPNsense
+  ├── run-cicflowmeter.sh — extracts flow features
+  └── label-flows.py      — applies labels from session_log.csv
         │  scp on demand
         ▼
 Alienware m16 R2  ← training workstation
@@ -60,13 +60,26 @@ Alienware m16 R2  ← training workstation
 
 | Scenario | Tool | Target |
 |----------|------|--------|
-| SYN port scan | Nmap | All VLAN 30 hosts |
-| OS/service fingerprint | Nmap | All VLAN 30 hosts |
-| Exploit attempt (ms17-010) | Metasploit | Metasploitable |
+| SYN port scan (all 65535 ports) | Nmap | All VLAN 30 hosts |
+| Service + OS detection | Nmap | All VLAN 30 hosts |
+| IDS/Firewall evasion (fragmentation, decoys, TTL, badsum) | Nmap | Metasploitable |
+| Exploit attempt (EternalBlue ms17-010) | Metasploit | Metasploitable |
 | SSH brute force | Hydra | Metasploitable |
-| HTTP brute force | Hydra | iMac Ubuntu Server |
-| Slow HTTP DoS | slowhttptest | iMac Ubuntu Server |
-| C2-style beacon | Custom Python | Configurable |
+| HTTP form brute force (DVWA, phpMyAdmin) | Hydra | Metasploitable |
+| Slow HTTP DoS (Slowloris) | slowhttptest | Metasploitable |
+| C2 beaconing simulation (regular, jitter, exfil) | Custom Python | Metasploitable |
+
+---
+
+## Benign Traffic Scenarios
+
+| Scenario | Tool | Source |
+|----------|------|--------|
+| HTTP/HTTPS web browsing | curl | Ubuntu Server |
+| DNS queries (A/AAAA, mixed hosts) | dig | Ubuntu Server |
+| SSH admin sessions | sshpass/ssh | Ubuntu Server |
+| SCP file transfers (10KB–2MB) | scp | Ubuntu Server |
+| ICMP ping sweep (periodic) | ping | Ubuntu Server |
 
 ---
 
@@ -74,7 +87,7 @@ Alienware m16 R2  ← training workstation
 
 | Layer | Tools |
 |-------|-------|
-| Capture | OPNsense built-in, tcpdump, Suricata |
+| Capture | OPNsense built-in, Suricata IDS |
 | Feature extraction | CICFlowMeter |
 | Pipeline | Bash, Python 3, rsync |
 | ML | scikit-learn, XGBoost, pandas, NumPy |
@@ -101,42 +114,68 @@ Alienware m16 R2  ← training workstation
 
 ```
 ai-traffic-classifier/
-├── config.yaml              # Central config — all paths and parameters
+├── README.md
+├── config.yaml                          ← central config, all paths and parameters
+├── ubuntu_setup.sh                      ← one-shot Ubuntu Server environment setup
 ├── data/
-│   ├── raw/                 # PCAP files (not committed — regenerate with pipeline)
-│   ├── processed/           # Labeled CSV dataset
-│   └── session_log.csv      # Ground truth — manually logged attack sessions
-├── capture/                 # OPNsense capture configuration docs
-├── attack-scripts/          # Kali attack scripts (run manually)
-├── pipeline/                # Ubuntu Server automation scripts
-│   ├── sync_pcaps.sh        # Pull PCAPs from OPNsense
-│   ├── run_cicflowmeter.sh  # Extract flow features
-│   └── label_flows.py       # Apply labels from session log
+│   ├── raw/                             ← PCAP files (not committed — regenerate with pipeline)
+│   ├── processed/                       ← labeled CSV dataset
+│   └── session_log.csv                  ← ground truth — manually logged attack timestamps
+├── capture/                             ← OPNsense capture configuration docs
+├── attack-scripts/                      ← Kali attack scripts (run manually)
+│   ├── nmap-syn-scan.sh
+│   ├── nmap-service-scan.sh
+│   ├── nmap-evasion-scan.sh
+│   ├── metasploit-ms17010.sh
+│   ├── hydra-ssh-brute.sh
+│   ├── hydra-http-brute.sh
+│   ├── slowhttptest-dos.sh
+│   ├── c2-beacon.py
+│   └── run-all-attacks.sh               ← master script — runs all 8 sequentially
+├── normal traffic generation scripts/   ← Ubuntu Server benign traffic scripts
+│   ├── benign-web-traffic.sh
+│   ├── benign-dns-queries.sh
+│   ├── benign-ssh-session.sh
+│   ├── benign-file-transfer.sh
+│   ├── benign-ping-sweep.sh
+│   ├── run-benign-all.sh                ← start all 5 benign scripts
+│   └── stop-benign-all.sh               ← stop all 5 benign scripts
+├── pipeline/
+│   ├── sync-pcaps.sh                    ← pull PCAPs from OPNsense
+│   ├── run-cicflowmeter.sh              ← extract flow features
+│   └── label-flows.py                   ← apply labels from session log
 ├── src/
-│   ├── preprocessing.py     # Clean and prepare dataset for training
-│   ├── train.py             # Train and serialize models
-│   ├── evaluate.py          # Generate metrics and visualizations
-│   └── explain.py           # Ollama LLM explainability
+│   ├── preprocessing.py                 ← clean and prepare dataset
+│   ├── train.py                         ← train and serialize models
+│   ├── evaluate.py                      ← generate metrics and visualizations
+│   └── explain.py                       ← Ollama LLM explainability
 ├── notebooks/
-│   └── full_pipeline.ipynb  # End-to-end walkthrough for reproducibility
-├── models/                  # Serialized trained models
-├── results/                 # Evaluation plots and reports
+│   └── full_pipeline.ipynb              ← end-to-end walkthrough
+├── models/                              ← serialized trained models
+├── results/                             ← evaluation plots and reports
 └── writeup/
-    └── local_vs_cloud.md    # Local ML vs cloud AI deployment comparison
+    └── local_vs_cloud.md                ← local ML vs cloud AI comparison
 ```
 
 ---
 
-## Reproducing the Dataset
+## Capture Session Workflow
 
-Raw PCAP files are not committed to this repo. To regenerate the dataset:
+```bash
+# 1. Start benign traffic on Ubuntu Server
+bash "normal traffic generation scripts/run-benign-all.sh"
 
-1. Set up a lab matching the architecture described above (or adapt `config.yaml` for your network)
-2. Configure OPNsense continuous capture on the VLAN 20/30 interface
-3. SSH into Ubuntu Server and run `./pipeline/sync_pcaps.sh` after running attack scripts
-4. Run `./pipeline/run_cicflowmeter.sh` to extract features
-5. Fill in `data/session_log.csv` with your attack session timestamps
-6. Run `python3 pipeline/label_flows.py` to generate the labeled dataset
+# 2. Run all attacks on Kali
+sudo bash attack-scripts/run-all-attacks.sh
+
+# 3. Stop benign traffic when attacks finish
+bash "normal traffic generation scripts/stop-benign-all.sh"
+
+# 4. Run pipeline on Ubuntu Server
+bash pipeline/sync-pcaps.sh
+bash pipeline/run-cicflowmeter.sh
+python3 pipeline/label-flows.py
+```
 
 ---
 
@@ -146,7 +185,7 @@ Raw PCAP files are not committed to this repo. To regenerate the dataset:
 |---|-----------|--------|
 | 0 | Repo scaffold + Ubuntu environment setup | ✅ Complete |
 | 1 | OPNsense continuous capture + Suricata | ✅ Complete |
-| 2 | Attack scripts on Kali | ✅ Complete |
+| 2 | Attack + benign traffic scripts | ✅ Complete |
 | 3 | Ubuntu pipeline — sync, CICFlowMeter, labeling | 🔧 In Progress |
 | 4 | First capture session | ⬜ Pending |
 | 5 | Preprocessing pipeline | ⬜ Pending |
