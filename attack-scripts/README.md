@@ -27,15 +27,13 @@ cd /home/terickson/traffic-generation-scripts
 bash stop-benign-all.sh
 ```
 
-### Step 4 — Copy session log to data/session_log.csv
+### Step 4 — Copy session log entries
 The attack script prints a session log at the end. Copy those entries into
 `data/session_log.csv` on the Ubuntu Server.
 
 ---
 
 ## Running Individual Scripts
-
-If you want to run a single attack instead of the full suite:
 
 ```bash
 # Always run as root
@@ -47,7 +45,7 @@ sudo bash hydra-ssh-brute.sh
 python3 c2-beacon.py --mode regular --duration 120
 ```
 
-Manually log the session in `data/session_log.csv` after each run.
+Log the session manually in `data/session_log.csv` after each run.
 
 ---
 
@@ -69,9 +67,6 @@ Manually log the session in `data/session_log.csv` after each run.
 
 ## Session Log Format
 
-Every attack session must be logged. This is your ground truth — the pipeline
-uses these timestamps to label flows as malicious or benign automatically.
-
 `run-all-attacks.sh` logs sessions automatically. For manual runs, add a row to
 `data/session_log.csv` on the Ubuntu Server:
 
@@ -91,13 +86,11 @@ timestamp_start,timestamp_end,scenario,targets,label,notes
 - Always use ISO format: `YYYY-MM-DD HH:MM:SS`
 - `targets` — comma-separated IPs attacked
 - `label` — always `malicious` for attack scripts
-- `notes` — record outcome (success/fail), flags used, anything notable
+- `notes` — record outcome, flags used, anything notable
 
 ---
 
 ## Recommended Attack Order
-
-Run lightest to heaviest — allows network to recover between aggressive attacks:
 
 1. `nmap-syn-scan.sh` — fast reconnaissance
 2. `nmap-service-scan.sh` — detailed fingerprinting
