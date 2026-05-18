@@ -1,16 +1,16 @@
 #!/bin/bash
 # ============================================================
 # run-all-attacks.sh
-# Runs all attack scripts sequentially with logging.
-# Each attack is logged to session_log.csv automatically.
+# Runs all attack scripts sequentially with automatic logging.
 #
 # Run on: Kali Linux (192.168.20.20) as root
-# Usage:  sudo bash /home/attacker/attack-scripts/run-all-attacks.sh
+# Location: /home/attacker/attack-scripts/
+# Usage:  sudo bash run-all-attacks.sh
 #
 # Before running:
 #   1. Start benign traffic on Ubuntu Server:
 #      bash run-benign-all.sh
-#   2. Then run this script on Kali
+#   2. Run this script on Kali
 #   3. When done, stop benign traffic:
 #      bash stop-benign-all.sh
 # ============================================================
@@ -22,9 +22,8 @@ fi
  
 SCRIPT_DIR="/home/attacker/attack-scripts"
 SESSION_LOG="/tmp/session-log-entries.csv"
-PAUSE_BETWEEN=60  # seconds between attacks
+PAUSE_BETWEEN=60
  
-# ── Session log helper ────────────────────────────────────────
 log_session() {
     local scenario=$1
     local targets=$2
@@ -48,7 +47,6 @@ echo ""
 read -p "Press ENTER when ready to begin attacks..."
 echo ""
  
-# Initialize session log
 echo "timestamp_start,timestamp_end,scenario,targets,label,notes" > "$SESSION_LOG"
  
 # ── Attack 1: Nmap SYN Scan ───────────────────────────────────
@@ -59,7 +57,7 @@ START=$(date '+%Y-%m-%d %H:%M:%S')
 bash "${SCRIPT_DIR}/nmap-syn-scan.sh"
 END=$(date '+%Y-%m-%d %H:%M:%S')
 log_session "nmap_syn_scan" "192.168.30.10,192.168.30.20,192.168.30.2" "$START" "$END" "full port range SYN scan"
-echo "[*] Pausing ${PAUSE_BETWEEN}s before next attack..."
+echo "[*] Pausing ${PAUSE_BETWEEN}s..."
 sleep $PAUSE_BETWEEN
  
 # ── Attack 2: Nmap Service Scan ──────────────────────────────
@@ -144,10 +142,8 @@ echo " All attacks complete!"
 echo " Finished: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================"
 echo ""
-echo "Session log entries saved to: ${SESSION_LOG}"
-echo ""
 echo "NEXT STEPS:"
-echo "  1. Copy contents of ${SESSION_LOG} into"
+echo "  1. Copy session log entries below into"
 echo "     data/session_log.csv on Ubuntu Server"
 echo "  2. Stop benign traffic on Ubuntu Server:"
 echo "     bash stop-benign-all.sh"
@@ -158,3 +154,4 @@ echo "     python3 pipeline/label-flows.py"
 echo ""
 echo "---- SESSION LOG ENTRIES ----"
 cat "$SESSION_LOG"
+ 
