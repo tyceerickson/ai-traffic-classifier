@@ -164,8 +164,8 @@ ai-traffic-classifier/
 | 0 | Repo scaffold + Ubuntu environment setup | ✅ Complete |
 | 1 | OPNsense continuous capture + Suricata | ✅ Complete |
 | 2 | Attack + benign traffic scripts | ✅ Complete |
-| 3 | Ubuntu pipeline — sync, CICFlowMeter, labeling | 🔧 In Progress |
-| 4 | First capture session | ⬜ Pending |
+| 3 | Ubuntu pipeline — sync, CICFlowMeter, labeling | ✅ Complete |
+| 4 | First capture session | 🔧 In Progress |
 | 5 | Preprocessing pipeline | ⬜ Pending |
 | 6 | Model training + evaluation | ⬜ Pending |
 | 7 | Ollama explainability layer | ⬜ Pending |
