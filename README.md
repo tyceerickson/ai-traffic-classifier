@@ -235,7 +235,7 @@ python src/explain.py
 | 5 | Preprocessing pipeline | ✅ Complete |
 | 6 | Model training + evaluation | ✅ Complete |
 | 7 | Ollama llama3.1:8b explainability layer | ✅ Complete |
-| 8 | Notebook + README + writeup | 🔧 In Progress |
+| 8 | Notebook + README + writeup | ✅ Complete |
 
 ---
 
