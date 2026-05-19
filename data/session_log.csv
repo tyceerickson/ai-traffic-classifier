@@ -1,2 +1,9 @@
 timestamp_start,timestamp_end,scenario,targets,label,notes
-2025-05-13 00:00:00,2025-05-13 00:00:01,EXAMPLE_DO_NOT_USE,192.168.30.20,malicious,Delete this row and add your real sessions below
+2026-05-18 19:24:59,2026-05-18 21:15:11,nmap_syn_scan,"192.168.30.10,192.168.30.20,192.168.30.2",malicious,full port range SYN scan all 65535 ports
+2026-05-18 21:16:11,2026-05-18 23:10:28,nmap_service_scan,"192.168.30.10,192.168.30.20,192.168.30.2",malicious,sV sC sS OS detection all ports
+2026-05-18 23:11:28,2026-05-18 23:12:19,nmap_evasion_scan,192.168.30.20,malicious,fragmentation decoys TTL badsum combined
+2026-05-18 23:13:19,2026-05-18 23:13:20,hydra_ssh_brute,192.168.30.20,malicious,SSH credential brute force rockyou subset
+2026-05-18 23:14:20,2026-05-18 23:14:36,hydra_http_brute,192.168.30.20,malicious,DVWA phpMyAdmin HTTP form brute force
+2026-05-18 23:15:36,2026-05-18 23:21:50,c2_beacon,192.168.30.20,malicious,regular jitter exfil modes 120s each
+2026-05-18 23:22:50,2026-05-18 23:31:00,slowhttptest_dos,192.168.30.20,malicious,Slowloris 500 connections port 80 and 8180
+2026-05-18 23:32:00,2026-05-18 23:32:22,metasploit_ms17010,192.168.30.20,malicious,EternalBlue SMB exploit attempt

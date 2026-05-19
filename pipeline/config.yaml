@@ -7,41 +7,76 @@
 # ── Network / Lab ────────────────────────────────────────────
 lab:
   opnsense_ip: "192.168.10.1"
-  opnsense_user: "root"                   # SSH user for OPNsense
-  ubuntu_pcap_dir: "/opt/pcaps"           # Where OPNsense drops PCAPs via rsync
-  capture_interface: "em1"               # OPNsense interface facing VLAN 20→30
+  opnsense_user: "root"                  # SSH user for OPNsense
+  ubuntu_server_ip: "192.168.10.4"       # Ubuntu Server VM
+  ubuntu_user: "terickson"
+  capture_interface: "vlan0.20"          # OPNsense interface — VLAN 20 attackers
 
-  # VLAN 30 victim hosts — used in attack scripts for reference
+  # VLAN 30 victim hosts
   victims:
-    windows11:   "192.168.30.10"
+    windows11:      "192.168.30.10"
     metasploitable: "192.168.30.20"
-    tp_link_ap:  "192.168.30.2"
+    tp_link_ap:     "192.168.30.2"
 
-# ── Data Paths ───────────────────────────────────────────────
+  # VLAN 20 attacker
+  attacker:
+    kali: "192.168.20.20"
+
+# ── Data Paths (Ubuntu Server) ───────────────────────────────
 paths:
-  raw_pcap_dir:        "data/raw"
-  processed_dir:       "data/processed"
-  session_log:         "data/session_log.csv"
-  cicflow_output_dir:  "pipeline/cicflow_output"
-  cicflowmeter_jar:    "/opt/CICFlowMeter/bin/CICFlowMeter"
-  master_dataset:      "data/processed/features.csv"
-  train_csv:           "data/processed/train.csv"
-  test_csv:            "data/processed/test.csv"
+  pcap_dir:           "/opt/pcaps"                        # PCAPs synced from OPNsense
+  cicflow_output_dir: "/opt/cicflow_output"               # CICFlowMeter CSV output
+  suricata_output:    "/opt/suricata/eve.json"            # Suricata offline analysis output
+  session_log:        "/home/terickson/data/session_log.csv"
+  features_csv:       "/home/terickson/data/features.csv" # Labeled master dataset
+
+# ── Data Paths (Alienware — training) ────────────────────────
+  master_dataset:     "data/processed/features.csv"
+  train_csv:          "data/processed/train.csv"
+  test_csv:           "data/processed/test.csv"
+  scaler_pkl:         "data/processed/scaler.pkl"
 
 # ── Pipeline Settings ────────────────────────────────────────
 pipeline:
-  rsync_schedule_minutes: 60       # How often to pull PCAPs from OPNsense
-  min_pcap_size_kb: 100            # Ignore PCAPs smaller than this (incomplete captures)
+  rsync_schedule_minutes: 60    # OPNsense rsync cron frequency
+  min_pcap_size_kb: 100         # Ignore PCAPs smaller than this
   label_benign: 0
   label_malicious: 1
+  timezone_offset_hours: 6      # Kali timestamps are MDT (UTC-6), add 6 for UTC
+
+# ── CICFlowMeter ─────────────────────────────────────────────
+cicflowmeter:
+  version: "0.1.9"              # pip version — NOT the Java jar version
+  install_cmd: "pip3 install cicflowmeter==0.1.9 --break-system-packages"
+  pipeline_script: "~/pcap_to_csv.py"
+  # Note: CICFlowMeter 0.1.9 requires patches for Scapy 2.7 compatibility
+  # Patches are in ~/.local/lib/python3.12/site-packages/cicflowmeter/
+  # See ubuntu_setup.sh for patch details
+
+# ── Suricata (Ubuntu Server — offline mode) ──────────────────
+suricata:
+  binary: "/usr/bin/suricata"
+  config: "/etc/suricata/suricata.yaml"
+  rules:  "/var/lib/suricata/rules/suricata.rules"
+  output: "/opt/suricata/eve.json"
+  pipeline_script: "~/pipeline/run_suricata.sh"
+  home_net: "[192.168.10.0/24,192.168.30.0/24,192.168.40.0/24,192.168.99.0/24]"
+  external_net: "!$HOME_NET"
+  # Note: Suricata runs OFFLINE against PCAP files after each capture session
+  # It does NOT run live on OPNsense (unstable on OPNsense 26.1 + Suricata 8.0.3)
 
 # ── Preprocessing ────────────────────────────────────────────
 preprocessing:
   test_split: 0.2
   random_state: 42
   scale_features: true
-  handle_imbalance: true           # Apply SMOTE if class ratio exceeds threshold
-  imbalance_threshold: 3.0         # Max benign:malicious ratio before SMOTE kicks in
+  undersample_ratio: 3          # Undersample malicious to 3:1 ratio
+  drop_cols:
+    - "src_ip"
+    - "dst_ip"
+    - "timestamp"
+    - "scenario"
+    - "label"
 
 # ── Model Training ───────────────────────────────────────────
 training:
@@ -51,17 +86,25 @@ training:
     - "decision_tree"
     - "logistic_regression"
   primary_model: "random_forest"
+  random_state: 42
   random_forest:
     n_estimators: 100
     max_depth: null
-    random_state: 42
+    n_jobs: -1                  # Use all CPU cores
   xgboost:
     n_estimators: 100
     learning_rate: 0.1
-    random_state: 42
+    device: "cuda"              # RTX 4070 GPU acceleration
+  decision_tree:
+    max_depth: 20
+  logistic_regression:
+    max_iter: 1000
+    n_jobs: -1
 
 # ── Ollama / Explainability ──────────────────────────────────
 ollama:
-  model: "llama3"
+  model: "llama3.1:8b"          # Local LLM on Alienware RTX 4070
   host: "http://localhost:11434"
-  top_n_flows_to_explain: 10       # Number of flagged flows to send to LLM
+  flows_per_scenario: 2         # Explain N flows per attack type
+  temperature: 0.2
+  max_tokens: 350
