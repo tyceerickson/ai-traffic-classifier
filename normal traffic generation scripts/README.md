@@ -23,25 +23,21 @@ cd /home/terickson/traffic-generation-scripts
 bash stop-benign-all.sh
 ```
 
-That's it. All 5 scripts start and stop with a single command.
-
 ---
 
 ## How It Works
 
 Benign scripts run **continuously in the background** alongside attack scripts.
 They loop automatically — when one cycle finishes, it immediately restarts.
-This ensures the dataset has realistic benign traffic throughout the entire
-capture session, not just at the start.
 
 ```
 Ubuntu Server                          Kali Linux
 ─────────────────────────────          ─────────────────────
 bash run-benign-all.sh                 sudo bash run-all-attacks.sh
   └── web traffic (looping)              └── nmap-syn-scan.sh
-  └── dns queries (looping)             └── nmap-service-scan.sh
-  └── ssh sessions (looping)            └── hydra-ssh-brute.sh
-  └── file transfers (looping)          └── ... (8 scripts total)
+  └── dns queries (looping)              └── nmap-service-scan.sh
+  └── ssh sessions (looping)             └── hydra-ssh-brute.sh
+  └── file transfers (looping)           └── ... (8 scripts total)
   └── ping sweep (looping)
                     ↓ (when attacks done)
 bash stop-benign-all.sh
@@ -65,8 +61,6 @@ bash stop-benign-all.sh
 
 ## Running Individual Scripts
 
-If you want to run a single benign script for testing:
-
 ```bash
 # Run once (finishes after one cycle)
 bash benign-web-traffic.sh
@@ -82,58 +76,35 @@ bash benign-web-traffic.sh &
 
 ## Checking Script Status
 
-Check which benign scripts are currently running:
 ```bash
-ps aux | grep benign
+# Check how many benign processes are running (should be 10 = 5 loops + 5 scripts)
+ps aux | grep benign | grep -v grep | wc -l
+
+# View live logs for each script
+tail -f /tmp/web-traffic.log
+tail -f /tmp/dns-queries.log
+tail -f /tmp/ssh-session.log
+tail -f /tmp/file-transfer.log
+tail -f /tmp/ping-sweep.log
 ```
-
-View live logs for each script:
-```bash
-tail -f /tmp/web_traffic.log
-tail -f /tmp/dns_queries.log
-tail -f /tmp/ssh_session.log
-tail -f /tmp/file_transfer.log
-tail -f /tmp/ping_sweep.log
-```
-
----
-
-## Session Log
-
-Benign scripts do **not** need individual entries in `data/session_log.csv`.
-The labeling pipeline (`label_flows.py`) automatically labels any flow that
-falls **outside** a logged attack window as benign.
-
-The only entries in `session_log.csv` should be attack sessions:
-```
-timestamp_start,timestamp_end,scenario,targets,label,notes
-2026-05-15 14:00:00,2026-05-15 14:04:00,nmap_syn_scan,...,malicious,...
-```
-
-Everything else — all the web traffic, DNS queries, SSH sessions, file
-transfers, and pings — gets labeled `0` (benign) automatically.
 
 ---
 
 ## Installing Scripts on Ubuntu Server
 
-### Option A — Clone from GitHub (recommended)
+### Option A — Copy from Alienware via SCP (recommended)
+```powershell
+# From Alienware PowerShell
+scp C:\Users\tycee\Downloads\benign-scripts\* terickson@100.82.166.75:/home/terickson/traffic-generation-scripts/
+```
+
+### Option B — Clone from GitHub
 ```bash
+# On Ubuntu Server
 cd ~
 git clone https://github.com/tyceerickson/ai-traffic-classifier.git
-cp -r ai-traffic-classifier/benign-scripts /home/terickson/traffic-generation-scripts
-chmod +x /home/terickson/traffic-generation-scripts/*.sh
-```
-
-### Option B — Copy from Alienware via SCP
-From your Alienware (Windows PowerShell or Git Bash):
-```bash
-scp -r /path/to/benign-scripts/* homeserver:/home/terickson/traffic-generation-scripts/
-```
-
-Or using Tailscale IP directly:
-```bash
-scp -r C:\Users\tycee\Downloads\benign-scripts\* terickson@100.82.166.75:/home/terickson/traffic-generation-scripts/
+cp "ai-traffic-classifier/normal traffic generation scripts/"* \
+   /home/terickson/traffic-generation-scripts/
 ```
 
 ### Make scripts executable after copying
@@ -143,16 +114,32 @@ chmod +x /home/terickson/traffic-generation-scripts/*.sh
 
 ---
 
+## Session Log
+
+Benign scripts do **not** need individual entries in `session_log.csv`.
+The labeling pipeline (`label_flows.py`) automatically labels any flow that
+falls **outside** a logged attack window as benign (label=0).
+
+Only attack sessions go in `session_log.csv`:
+```
+timestamp_start,timestamp_end,scenario,targets,label,notes
+2026-05-18 19:24:59,2026-05-18 21:15:11,nmap_syn_scan,...,malicious,...
+```
+
+Everything else — all web traffic, DNS queries, SSH sessions, file transfers,
+and pings — gets labeled `0` (benign) automatically.
+
+---
+
 ## Prerequisites
 
-Scripts install missing tools automatically, but these should be present:
+Tools install automatically via the scripts, but verify these are present:
 
 ```bash
-# Verify tools are available
 curl --version
 dig -v
 sshpass -V
-ping -V
+ping -c 1 localhost
 
 # Install anything missing
 sudo apt-get install -y curl dnsutils sshpass iputils-ping
@@ -162,23 +149,10 @@ sudo apt-get install -y curl dnsutils sshpass iputils-ping
 
 ## Traffic Characteristics
 
-Understanding what each script generates helps interpret the ML model's
-feature importance output:
-
-**Web traffic** — irregular timing, varied packet sizes, HTTP application
-layer data, multiple short-lived TCP connections to port 80/443.
-
-**DNS queries** — small UDP packets to port 53, very short duration flows,
-query/response pairs, mix of A and AAAA record types.
-
-**SSH sessions** — encrypted TCP flows to port 22, longer duration (30-120s),
-moderate data volume, clean connection establishment and teardown.
-
-**File transfers** — large sustained TCP flows, high throughput, long duration,
-much more data outbound than inbound (upload) or inbound (download).
-
-**Ping sweep** — ICMP echo request/reply pairs, very small packets (84 bytes),
-regular 30-60 second intervals, one host at a time.
-
-These characteristics produce distinct feature vectors in CICFlowMeter output,
-giving the Random Forest classifier clear benign patterns to learn from.
+| Script | Flow Features | Why It Matters for ML |
+|--------|--------------|----------------------|
+| Web traffic | Irregular timing, varied packet sizes, HTTP layer, short TCP connections | Represents normal user browsing — contrasts with attack flood patterns |
+| DNS queries | Small UDP to port 53, very short flows, query/response pairs | Normal background traffic every device generates constantly |
+| SSH sessions | Encrypted TCP to port 22, longer duration (30-120s), moderate volume | Normal admin activity — contrasts with SSH brute force |
+| File transfers | Large sustained TCP flows, high throughput, long duration, asymmetric bytes | Normal data movement — contrasts with C2 exfiltration |
+| Ping sweep | ICMP echo pairs, 84-byte packets, regular 30-60 second intervals | Normal monitoring — contrasts with Nmap aggressive scanning |
