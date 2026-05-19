@@ -53,8 +53,8 @@ Log the session manually in `data/session_log.csv` after each run.
 
 | Script | Attack Type | Target | Approx Runtime |
 |--------|-------------|--------|----------------|
-| `nmap-syn-scan.sh` | SYN port scan (all 65535 ports) | All VLAN 30 hosts | 3-5 min |
-| `nmap-service-scan.sh` | Service + OS detection (`-sV -O -sC`) | All VLAN 30 hosts | 8-15 min |
+| `nmap-syn-scan.sh` | SYN port scan (all 65535 ports) | All VLAN 30 hosts | 70-90 min |
+| `nmap-service-scan.sh` | Service + OS detection (`-sV -O -sC`) (all 65535 ports) | All VLAN 30 hosts | 80-100 min |
 | `nmap-evasion-scan.sh` | IDS/firewall evasion (fragmentation, decoys, TTL, badsum) | Metasploitable | 5-8 min |
 | `hydra-ssh-brute.sh` | SSH credential brute force | Metasploitable (192.168.30.20) | 3-5 min |
 | `hydra-http-brute.sh` | HTTP form brute force (DVWA, phpMyAdmin) | Metasploitable (192.168.30.20) | 3-5 min |
