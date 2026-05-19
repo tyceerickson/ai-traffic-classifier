@@ -2,7 +2,7 @@
 
 > Local ML model trained on real malicious and benign network traffic generated in a home cybersecurity lab.
 
-**Status:** Milestones 0–7 complete — Milestone 8 (writeup) in progress
+**Status:** Completed
 
 ---
 
