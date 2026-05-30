@@ -116,7 +116,9 @@ timestamp_start,timestamp_end,scenario,targets,label,notes
 | `hydra-http-brute.sh` | ET SCAN Hydra HTTP brute force |
 | `slowhttptest-dos.sh` | ET DOS Slowloris |
 | `c2-beacon.py` | Possibly none — designed to evade detection |
-| `metasploit-ms17010.sh` | ET EXPLOIT MS17-010 EternalBlue |
+| `metasploit-ms17010.sh` | ET EternalBlue MS17-010 exploit Attempt|
+
+\* **Note:** MS17-010 (EternalBlue) exploits a Windows SMBv1 vulnerability. The target here is Metasploitable 2 (Linux/Samba), which is **not** vulnerable to EternalBlue, so this script generates the exploit-attempt traffic Suricata detects but does **not** achieve code execution. It is included to produce a labeled remote-exploitation traffic sample for the dataset (18 flows captured), not to demonstrate a successful compromise.
 
 ---
 
