@@ -5,7 +5,7 @@
 - Training samples: 610,137
 - Test samples: 152,535
 - Total (post-balancing): 762,672
- -Features: 78
+- Features: 78
 
 Note: the raw labeled dataset held 1,201,560 flows (1,056,039 malicious / 145,521 benign). config.yaml sets a target undersample of 3:1; the balanced dataset used for training/testing contains 762,672 flows, an effective malicious:benign ratio of ~4.2:1 after preprocessing. An 80/20 split produced the train/test counts above.
 
