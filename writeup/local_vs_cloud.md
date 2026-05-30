@@ -93,7 +93,7 @@ gets context without the flow data ever leaving the building.
 ### Limitations of the Local Approach
 
 **Hardware constraints are real.** Training the Random Forest on 610,137 flows
-took seconds on an an Alienware m16 R2 with a 16-core / 22-thread Intel Ultra 9 185H and 64GB RAM. On a
+took seconds on an Alienware m16 R2 with a 16-core / 22-thread Intel Ultra 9 185H and 64GB RAM. On a
 modest server or edge device, the same workload could take hours. Organizations
 without capable local infrastructure face a difficult tradeoff between
 detection capability and hardware budget.
