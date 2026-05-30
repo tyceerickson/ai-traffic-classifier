@@ -13,7 +13,7 @@
 #   models/decision_tree.pkl
 #   models/logistic_regression.pkl
 #   results/evaluation_report.md
-#   results/confusion_matrix.png
+#   results/confusion_matrix_random_forest.png
 #   results/roc_curve.png
 #   results/feature_importance.png
 #   results/model_comparison.png
