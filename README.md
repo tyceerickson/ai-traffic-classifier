@@ -26,7 +26,7 @@ The pipeline covers everything from raw packet capture to a trained classifier w
 **Best model: Random Forest (F1=1.0000)**
 
 Dataset: 1,201,560 flows — 1,056,039 malicious / 145,521 benign
-Training set: 610,137 flows | Test set: 152,535 flows | Features: 78
+Training set: 610,137 flows | Test set: 152,535 flows | Features: 78 (CICFlowMeter produces 82 raw flow columns; 4 non-feature identifier columns plus any zero-variance columns are dropped during preprocessing, leaving 78 training features)
 
 > Note: Near-perfect results are expected for lab-generated traffic with highly distinctive
 > attack patterns. Real-world performance on unseen network environments would be lower —
