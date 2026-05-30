@@ -19,7 +19,7 @@ cd /home/attacker/attack-scripts
 sudo bash run-all-attacks.sh
 ```
 Press **Enter** when prompted. All 8 attacks run sequentially with automatic
-session logging. Total runtime: ~90 minutes.
+session logging. Total runtime: ~4–5 hours (full 65,535-port scans across all three targets dominate the time).
 
 ### Step 3 — Stop benign traffic (Ubuntu Server, when attacks finish)
 ```bash
@@ -53,15 +53,15 @@ Log the session manually in `data/session_log.csv` after each run.
 
 | Script | Attack Type | Target | Approx Runtime |
 |--------|-------------|--------|----------------|
-| `nmap-syn-scan.sh` | SYN port scan (all 65535 ports) | All VLAN 30 hosts | 70-90 min |
-| `nmap-service-scan.sh` | Service + OS detection (`-sV -O -sC`) (all 65535 ports) | All VLAN 30 hosts | 80-100 min |
+| `nmap-syn-scan.sh` | SYN port scan (all 65535 ports) | All VLAN 30 hosts | ~ 1-2 hrs |
+| `nmap-service-scan.sh` | Service + OS detection (`-sV -O -sC`) (all 65535 ports) | All VLAN 30 hosts | ~ 2-3 hrs |
 | `nmap-evasion-scan.sh` | IDS/firewall evasion (fragmentation, decoys, TTL, badsum) | Metasploitable | 5-8 min |
 | `hydra-ssh-brute.sh` | SSH credential brute force | Metasploitable (192.168.30.20) | 3-5 min |
 | `hydra-http-brute.sh` | HTTP form brute force (DVWA, phpMyAdmin) | Metasploitable (192.168.30.20) | 3-5 min |
 | `slowhttptest-dos.sh` | Slow HTTP DoS (Slowloris) | Metasploitable ports 80 + 8180 | 5 min |
 | `c2-beacon.py` | C2 beaconing simulation (regular, jitter, exfil) | Metasploitable (192.168.30.20) | 6-12 min |
 | `metasploit-ms17010.sh` | EternalBlue SMB exploit attempt | Metasploitable (192.168.30.20) | 3-5 min |
-| `run-all-attacks.sh` | **Master script — runs all 8 above sequentially** | All VLAN 30 hosts | ~90 min |
+| `run-all-attacks.sh` | **Master script — runs all 8 above sequentially** | All VLAN 30 hosts | ~ 4-5 hrs |
 
 ---
 
