@@ -23,7 +23,7 @@ exploitation.
 
 But building a working model raises a second question: how would you actually
 deploy it? This writeup compares two fundamentally different approaches to
-that question — a fully local ML deployment versus a cloud AI API approach —
+that question, a fully local ML deployment versus a cloud AI API approach,
 and examines the tradeoffs that matter in real security environments.
 
 ---
@@ -45,7 +45,7 @@ project that means:
 - **Random Forest classifier** trained on 610,137 labeled flows makes
   malicious/benign predictions in milliseconds
 - **Ollama llama3.1:8b** running on a local RTX 4070 provides plain-English
-  explanations of flagged flows — no data leaves the machine
+  explanations of flagged flows, no data leaves the machine
 
 Every component runs on hardware the operator controls. No data traverses the
 internet. No external service has visibility into the network traffic being
@@ -56,7 +56,7 @@ analyzed.
 **Privacy is the primary argument.** Network traffic is among the most
 sensitive data an organization holds. It contains authentication credentials,
 internal hostnames, business communication patterns, and potential evidence of
-ongoing incidents. Sending this data to a cloud API — even an encrypted one —
+ongoing incidents. Sending this data to a cloud API, even an encrypted one,
 means trusting a third party with information that could expose the
 organization if mishandled, subpoenaed, or breached.
 
@@ -77,15 +77,15 @@ high-volume attack.
 **Cost at scale is non-trivial.** Cloud AI APIs charge per token or per
 request. This project analyzed 1,201,560 network flows from a single 5-hour
 capture session. At even modest per-request pricing, classifying production
-network traffic at enterprise scale — millions of flows per hour — would
+network traffic at enterprise scale, millions of flows per hour, would
 generate significant ongoing API costs. The local model runs for free after
 the initial hardware investment.
 
 **Explainability without data exposure.** This project uses Ollama to generate
 plain-English explanations of flagged flows. A security analyst seeing "ET SCAN
 Suspicious inbound to MySQL port 3306" in a Suricata alert may not immediately
-understand the full context. The LLM explanation — running entirely locally on
-an RTX 4070 — translates the raw feature values into actionable language:
+understand the full context. The LLM explanation, running entirely locally on
+an RTX 4070, translates the raw feature values into actionable language:
 "This flow shows a single SYN packet to port 3306 with no corresponding ACK,
 consistent with a port scan probing for exposed database services." The analyst
 gets context without the flow data ever leaving the building.
@@ -93,7 +93,7 @@ gets context without the flow data ever leaving the building.
 ### Limitations of the Local Approach
 
 **Hardware constraints are real.** Training the Random Forest on 610,137 flows
-took seconds on an Alienware m16 R2 with 22 CPU cores and 64GB RAM. On a
+took seconds on an an Alienware m16 R2 with a 16-core / 22-thread Intel Ultra 9 185H and 64GB RAM. On a
 modest server or edge device, the same workload could take hours. Organizations
 without capable local infrastructure face a difficult tradeoff between
 detection capability and hardware budget.
