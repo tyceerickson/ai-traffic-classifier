@@ -243,4 +243,4 @@ python src/explain.py
 
 Built as Project 2 of a cybersecurity/AI portfolio by a graduate student entering
 Carnegie Mellon University's MSISPM program.
-CompTIA Security+, Network+, ISC2 CC, Microsoft AI-900 certified.
+CompTIA Security+, Network+, & ISC2 CC certified.
